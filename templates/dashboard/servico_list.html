@@ -1,0 +1,55 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Gerenciar Serviços{% endblock %}
+{% block page_title %}Serviços{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-wrench"></i> Lista de Serviços</span>
+        <a href="{% url 'servico_create' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Novo Serviço
+        </a>
+    </div>
+    <div class="card-body">
+        {% if servicos %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Ícone</th>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                        <th width="150">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for servico in servicos %}
+                    <tr>
+                        <td>{{ servico.ordem }}</td>
+                        <td><i class="{{ servico.icone }}"></i> <code>{{ servico.icone }}</code></td>
+                        <td><strong>{{ servico.titulo }}</strong></td>
+                        <td>{{ servico.descricao|truncatewords:15 }}</td>
+                        <td>
+                            <a href="{% url 'servico_edit' servico.pk %}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'servico_delete' servico.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-wrench fa-3x text-muted mb-3"></i>
+            <p>Nenhum serviço cadastrado ainda.</p>
+            <a href="{% url 'servico_create' %}" class="btn btn-primary">Adicionar primeiro serviço</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_title %}Detalhes da Mensagem{% endblock %}
+
+{% block content %}
+<div style="background: white; border-radius: 16px; padding: 2rem; max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{% url 'dashboard_messages' %}" style="color: #3b82f6; text-decoration: none;">← Voltar para mensagens</a>
+    </div>
+    
+    <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1rem;">
+        <h2>{{ message.name }}</h2>
+        <p style="color: #64748b;"><i class="fas fa-calendar"></i> {{ message.created_at|date:"d/m/Y H:i:s" }}</p>
+        <p><i class="fas fa-phone"></i> {{ message.phone }}</p>
+    </div>
+    
+    <div style="margin-bottom: 2rem;">
+        <h3>Mensagem:</h3>
+        <p style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-top: 0.5rem; white-space: pre-wrap;">{{ message.message }}</p>
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+        <a href="https://wa.me/258{{ message.phone|cut:' '|cut:'('|cut:')'|cut:'-' }}" target="_blank" class="btn-whatsapp" style="background: #25d366; color: white; padding: 10px 20px; border-radius: 40px; text-decoration: none;">
+            <i class="fab fa-whatsapp"></i> Responder via WhatsApp
+        </a>
+        <a href="{% url 'dashboard_message_delete' message.id %}" class="btn-delete" onclick="return confirm('Excluir esta mensagem?')" style="background: #ef4444; color: white; padding: 10px 20px; border-radius: 40px; text-decoration: none;">
+            <i class="fas fa-trash"></i> Excluir
+        </a>
+    </div>
+</div>
+{% endblock %}

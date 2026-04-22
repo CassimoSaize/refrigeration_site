@@ -1,0 +1,140 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Solicitações de Orçamento{% endblock %}
+{% block page_title %}Orçamentos{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+
+            <div class="card-body">
+
+                <!-- Botão criar orçamento -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0">Orçamentos</h5>
+
+                    <a href="{% url 'solicitar_orcamento' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Criar Orçamento
+                    </a>
+                </div>
+
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3">
+                            <h3 class="text-primary">{{ stats.total }}</h3>
+                            <small class="text-muted">Total</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 bg-warning bg-opacity-10">
+                            <h3 class="text-warning">{{ stats.pending }}</h3>
+                            <small class="text-muted">Pendentes</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 bg-info bg-opacity-10">
+                            <h3 class="text-info">{{ stats.contacted }}</h3>
+                            <small class="text-muted">Em contato</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 bg-success bg-opacity-10">
+                            <h3 class="text-success">{{ stats.approved }}</h3>
+                            <small class="text-muted">Aprovados</small>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-file-invoice-dollar"></i> Solicitações de Orçamento</span>
+        <div>
+            <form method="get" class="d-inline">
+                <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                    <option value="">Todos os status</option>
+                    <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pendente</option>
+                    <option value="viewed" {% if current_status == 'viewed' %}selected{% endif %}>Visualizado</option>
+                    <option value="contacted" {% if current_status == 'contacted' %}selected{% endif %}>Em contato</option>
+                    <option value="budget_sent" {% if current_status == 'budget_sent' %}selected{% endif %}>Orçamento enviado</option>
+                    <option value="approved" {% if current_status == 'approved' %}selected{% endif %}>Aprovado</option>
+                    <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>Concluído</option>
+                </select>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if orcamentos %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Serviço</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th width="150">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orc in orcamentos %}
+                    <tr class="{% if orc.status == 'pending' %}table-warning{% endif %}">
+                        <td>#{{ orc.id }}</td>
+                        <td>
+                            <strong>{{ orc.nome }}</strong><br>
+                            <small class="text-muted">{{ orc.email }}</small>
+                        </td>
+                        <td>{{ orc.get_tipo_servico_display }}</td>
+                        <td>{{ orc.telefone }}</td>
+                        <td>
+                            {% if orc.status == 'pending' %}
+                                <span class="badge bg-warning">Pendente</span>
+                            {% elif orc.status == 'viewed' %}
+                                <span class="badge bg-info">Visualizado</span>
+                            {% elif orc.status == 'contacted' %}
+                                <span class="badge bg-primary">Em contato</span>
+                            {% elif orc.status == 'budget_sent' %}
+                                <span class="badge bg-secondary">Orçamento enviado</span>
+                            {% elif orc.status == 'approved' %}
+                                <span class="badge bg-success">Aprovado</span>
+                            {% elif orc.status == 'rejected' %}
+                                <span class="badge bg-danger">Recusado</span>
+                            {% elif orc.status == 'completed' %}
+                                <span class="badge bg-dark">Concluído</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ orc.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'orcamento_detail' orc.pk %}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'orcamento_delete' orc.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+            <p>Nenhuma solicitação de orçamento recebida ainda.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Editar Seção Sobre{% endblock %}
+{% block page_title %}Sobre - Seção "Sobre mim"{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-user"></i> Editar conteúdo da seção Sobre
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.titulo.id_for_label }}" class="form-label">Título da Seção</label>
+                {{ form.titulo }}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.texto.id_for_label }}" class="form-label">Texto Principal</label>
+                {{ form.texto }}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.diferenciais.id_for_label }}" class="form-label">Lista de Diferenciais</label>
+                {{ form.diferenciais }}
+                <small class="text-muted">Digite um diferencial por linha. Exemplo:<br>
+                Diagnóstico rápido e transparente<br>
+                Peças originais e garantia<br>
+                Atendimento pontual e sem sujeira</small>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-eye"></i> Pré-visualização dos Diferenciais
+    </div>
+    <div class="card-body">
+        <ul>
+            {% for diff in form.instance.get_diferenciais_list %}
+                <li><i class="fas fa-check-circle text-success"></i> {{ diff }}</li>
+            {% empty %}
+                <li class="text-muted">Nenhum diferencial cadastrado ainda.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

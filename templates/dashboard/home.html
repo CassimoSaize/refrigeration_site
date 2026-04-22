@@ -1,0 +1,55 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block page_title %}Dashboard - Visão Geral{% endblock %}
+
+{% block content %}
+<div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="color: #64748b; font-size: 0.9rem;">Total de Mensagens</p>
+                <h2 style="font-size: 2rem; margin-top: 0.5rem;">{{ total_messages }}</h2>
+            </div>
+            <i class="fas fa-envelope" style="font-size: 2.5rem; color: #3b82f6;"></i>
+        </div>
+    </div>
+    <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="color: #64748b; font-size: 0.9rem;">Não Lidas</p>
+                <h2 style="font-size: 2rem; margin-top: 0.5rem;">{{ unread_messages }}</h2>
+            </div>
+            <i class="fas fa-envelope-open-text" style="font-size: 2.5rem; color: #f59e0b;"></i>
+        </div>
+    </div>
+    <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="color: #64748b; font-size: 0.9rem;">Últimos 30 dias</p>
+                <h2 style="font-size: 2rem; margin-top: 0.5rem;">{{ recent_messages }}</h2>
+            </div>
+            <i class="fas fa-chart-line" style="font-size: 2.5rem; color: #10b981;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="chart-card" style="background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h3 style="margin-bottom: 1rem;">Mensagens por dia (últimos 7 dias)</h3>
+    <div style="display: flex; align-items: flex-end; gap: 1rem; height: 200px;">
+        {% for item in last_7_days %}
+        <div style="flex: 1; text-align: center;">
+            <div style="background: #3b82f6; height: {{ item.count|default:0|add:0 }}px; max-height: 150px; width: 100%; border-radius: 8px 8px 0 0; transition: 0.3s;"></div>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">{{ item.date }}</p>
+            <p style="font-weight: bold;">{{ item.count }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'dashboard_messages' %}" class="btn-view" style="display: inline-block; background: #0a2b4e; color: white; padding: 10px 24px; border-radius: 40px; text-decoration: none;">
+        Ver todas as mensagens <i class="fas fa-arrow-right"></i>
+    </a>
+</div>
+{% endblock %}

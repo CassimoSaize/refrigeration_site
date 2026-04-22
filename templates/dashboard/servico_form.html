@@ -1,0 +1,80 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}{% if form.instance.pk %}Editar{% else %}Novo{% endif %} Serviço{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Editar Serviço{% else %}Novo Serviço{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-wrench"></i>
+        {% if form.instance.pk %}Editando: {{ form.instance.titulo }}{% else %}Cadastrar novo serviço{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.titulo.id_for_label }}" class="form-label">Título *</label>
+                    {{ form.titulo }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.ordem.id_for_label }}" class="form-label">Ordem</label>
+                    {{ form.ordem }}
+                    <small class="text-muted">Número menor aparece primeiro</small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.icone.id_for_label }}" class="form-label">Ícone (FontAwesome)</label>
+                {{ form.icone }}
+                <small class="text-muted d-block">Ex: fas fa-wrench, fas fa-snowflake, fas fa-tools</small>
+                <div class="mt-2">
+                    <span>Prévia: <i class="{{ form.icone.value|default:'fas fa-wrench' }}"></i></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.descricao.id_for_label }}" class="form-label">Descrição</label>
+                {{ form.descricao }}
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+                <a href="{% url 'servico_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i> Ícones FontAwesome disponíveis
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-3"><i class="fas fa-wrench"></i> fas fa-wrench</div>
+            <div class="col-3"><i class="fas fa-sync-alt"></i> fas fa-sync-alt</div>
+            <div class="col-3"><i class="fas fa-tools"></i> fas fa-tools</div>
+            <div class="col-3"><i class="fas fa-broom"></i> fas fa-broom</div>
+            <div class="col-3"><i class="fas fa-gas-pump"></i> fas fa-gas-pump</div>
+            <div class="col-3"><i class="fas fa-snowflake"></i> fas fa-snowflake</div>
+            <div class="col-3"><i class="fas fa-fan"></i> fas fa-fan</div>
+            <div class="col-3"><i class="fas fa-temperature-low"></i> fas fa-temperature-low</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Atualiza prévia do ícone em tempo real
+    document.getElementById('{{ form.icone.id_for_label }}').addEventListener('input', function(e) {
+        const preview = this.closest('.mb-3').querySelector('i');
+        preview.className = e.target.value;
+    });
+</script>
+{% endblock %}

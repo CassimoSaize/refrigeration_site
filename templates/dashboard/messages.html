@@ -1,0 +1,42 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block page_title %}Mensagens de Contato{% endblock %}
+
+{% block content %}
+<div class="filters" style="background: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <a href="?status=all" class="filter-btn {% if not current_filter %}active{% endif %}" style="padding: 6px 12px; background: #e2e8f0; border-radius: 20px; text-decoration: none; color: #0f172a;">Todas</a>
+    <a href="?status=unread" class="filter-btn {% if current_filter == 'unread' %}active{% endif %}" style="padding: 6px 12px; background: #e2e8f0; border-radius: 20px; text-decoration: none; color: #0f172a;">Não lidas</a>
+    <a href="?status=read" class="filter-btn {% if current_filter == 'read' %}active{% endif %}" style="padding: 6px 12px; background: #e2e8f0; border-radius: 20px; text-decoration: none; color: #0f172a;">Lidas</a>
+    
+    <form method="get" style="margin-left: auto; display: flex; gap: 0.5rem;">
+        <input type="text" name="search" placeholder="Buscar..." value="{{ search_term }}" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 20px;">
+        <button type="submit" style="background: #3b82f6; border: none; padding: 6px 16px; border-radius: 20px; color: white;">Buscar</button>
+    </form>
+</div>
+
+<div class="messages-list">
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="message-item" style="background: white; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); {% if not msg.is_read %}border-left: 4px solid #f59e0b;{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+                <div>
+                    <h3>{{ msg.name }} <span style="font-size: 0.8rem; color: #64748b;">{{ msg.created_at|date:"d/m/Y H:i" }}</span></h3>
+                    <p><i class="fas fa-phone"></i> {{ msg.phone }}</p>
+                    <p style="margin-top: 0.5rem;">{{ msg.message|truncatechars:100 }}</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="{% url 'dashboard_message_detail' msg.id %}" class="btn-view" style="background: #3b82f6; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none;">Ver</a>
+                    <a href="{% url 'dashboard_message_delete' msg.id %}" class="btn-delete" onclick="return confirm('Tem certeza que deseja excluir esta mensagem?')" style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none;">Excluir</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if total_count == 0 %}
+        <p style="text-align: center; color: #64748b;">Nenhuma mensagem encontrada.</p>
+        {% endif %}
+    {% else %}
+        <p style="text-align: center; color: #64748b;">Nenhuma mensagem cadastrada ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

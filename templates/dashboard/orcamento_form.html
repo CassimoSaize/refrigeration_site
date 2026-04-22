@@ -1,0 +1,120 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Solicitar Orçamento - Cassimo Refrigeração{% endblock %}
+
+{% block content %}
+<section class="orcamento-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div class="card-header bg-primary text-white p-4">
+                        <h2 class="mb-2"><i class="fas fa-calculator"></i> Solicitar Orçamento</h2>
+                        <p class="mb-0 opacity-75">Preencha o formulário abaixo para receber um orçamento personalizado</p>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{% if message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" id="orcamentoForm">
+                            {% csrf_token %}
+
+                            <h5 class="mb-3"><i class="fas fa-user text-primary"></i> Dados Pessoais</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.nome.id_for_label }}" class="form-label">Nome completo *</label>
+                                    {{ form.nome }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">E-mail *</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.telefone.id_for_label }}" class="form-label">Telefone/WhatsApp *</label>
+                                    {{ form.telefone }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.endereco.id_for_label }}" class="form-label">Endereço</label>
+                                    {{ form.endereco }}
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3"><i class="fas fa-tools text-primary"></i> Detalhes do Serviço</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.tipo_servico.id_for_label }}" class="form-label">Tipo de serviço *</label>
+                                    {{ form.tipo_servico }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.tipo_equipamento.id_for_label }}" class="form-label">Tipo de equipamento</label>
+                                    {{ form.tipo_equipamento }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.quantidade.id_for_label }}" class="form-label">Quantidade</label>
+                                    {{ form.quantidade }}
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label for="{{ form.descricao.id_for_label }}" class="form-label">Descrição detalhada *</label>
+                                    {{ form.descricao }}
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3"><i class="fas fa-calendar-alt text-primary"></i> Preferência de Atendimento</h5>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.data_preferencial.id_for_label }}" class="form-label">Data preferencial</label>
+                                    {{ form.data_preferencial }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.horario_preferencial.id_for_label }}" class="form-label">Horário preferencial</label>
+                                    {{ form.horario_preferencial }}
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                Após o envio, entraremos em contato em até 24h úteis para confirmar os detalhes e enviar o orçamento.
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-paper-plane"></i> Enviar Solicitação
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-4 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <p class="mb-0 text-muted">
+                            <i class="fas fa-headset"></i> Prefere falar diretamente?
+                            <a href="https://wa.me/258844717288" class="text-success" target="_blank">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </a>
+                            ou ligue: <strong>+258 84 471 7288</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('{{ form.telefone.id_for_label }}');
+    telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 12) value = value.slice(0, 12);
+        e.target.value = value;
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Orçamento #{{ orcamento.id }}{% endblock %}
+{% block page_title %}Solicitação de Orçamento #{{ orcamento.id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Dados do Cliente
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">Nome:</label>
+                        <h5>{{ orcamento.nome }}</h5>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">E-mail:</label>
+                        <h5>{{ orcamento.email }}</h5>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">Telefone:</label>
+                        <h5>{{ orcamento.telefone }}</h5>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">Endereço:</label>
+                        <h5>{{ orcamento.endereco|default:"Não informado" }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-tools"></i> Detalhes do Serviço
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">Tipo de serviço:</label>
+                        <p><strong>{{ orcamento.get_tipo_servico_display }}</strong></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">Equipamento:</label>
+                        <p>{{ orcamento.get_tipo_equipamento_display|default:"Não especificado" }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted">Quantidade:</label>
+                        <p>{{ orcamento.quantidade }} unidade(s)</p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="text-muted">Descrição:</label>
+                        <div class="alert alert-light">
+                            {{ orcamento.descricao|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-calendar"></i> Preferências
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="text-muted">Data preferencial:</label>
+                        <p>{{ orcamento.data_preferencial|date:"d/m/Y"|default:"Não informada" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted">Horário preferencial:</label>
+                        <p>{{ orcamento.get_horario_preferencial_display|default:"Não informado" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-edit"></i> Atualizar Status
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                        {{ form.status }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.valor_orcamento.id_for_label }}" class="form-label">Valor do Orçamento (MZN)</label>
+                        {{ form.valor_orcamento }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.observacoes.id_for_label }}" class="form-label">Observações Internas</label>
+                        {{ form.observacoes }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save"></i> Atualizar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i> Informações
+            </div>
+            <div class="card-body">
+                <p><strong>Solicitação:</strong> {{ orcamento.created_at|date:"d/m/Y H:i" }}</p>
+                <p><strong>Última atualização:</strong> {{ orcamento.updated_at|date:"d/m/Y H:i" }}</p>
+                <p><strong>Status atual:</strong>
+                    <span class="badge
+                        {% if orcamento.status == 'pending' %}bg-warning
+                        {% elif orcamento.status == 'viewed' %}bg-info
+                        {% elif orcamento.status == 'contacted' %}bg-primary
+                        {% elif orcamento.status == 'budget_sent' %}bg-secondary
+                        {% elif orcamento.status == 'approved' %}bg-success
+                        {% elif orcamento.status == 'rejected' %}bg-danger
+                        {% else %}bg-dark{% endif %}">
+                        {{ orcamento.get_status_display }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-phone"></i> Ações Rápidas
+            </div>
+            <div class="card-body">
+                <a href="https://wa.me/{{ orcamento.telefone|cut:'+'|cut:' ' }}" target="_blank" class="btn btn-success w-100 mb-2">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="tel:{{ orcamento.telefone }}" class="btn btn-info w-100 mb-2">
+                    <i class="fas fa-phone"></i> Ligar
+                </a>
+                <a href="mailto:{{ orcamento.email }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-envelope"></i> Enviar E-mail
+                </a>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+    <div class="card-header">
+        <i class="fas fa-download"></i> Exportar
+    </div>
+    <div class="card-body">
+        <a href="{% url 'orcamento_export_pdf' orcamento.id %}" class="btn btn-danger w-100 mb-2">
+            <i class="fas fa-file-pdf"></i> Baixar PDF
+        </a>
+        <a href="{% url 'orcamento_export_excel' orcamento.id %}" class="btn btn-success w-100">
+            <i class="fas fa-file-excel"></i> Baixar Excel
+        </a>
+    </div>
+</div>
+    </div>
+</div>
+{% endblock %}

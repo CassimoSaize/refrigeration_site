@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Cabeçalho -->
+<header>
+    <div class="container header-container">
+        <div class="logo">
+            <h1><i class="fas fa-snowflake"></i> Cassimo Refrigeração</h1>
+            <p>Climatização & Refrigeração</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#servicos">Serviços</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#galeria">Galeria</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/258840000000?text=Olá!%20Gostaria%20de%20um%20orçamento" class="btn-whatsapp-header" target="_blank">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+    </div>
+</header>
+
+<!-- Hero Section -->
+{% if hero %}
+    <section id="inicio" class="hero">
+        <div class="container hero-content">
+            <h2>{{ hero.titulo }}</h2>
+            <p>{{ hero.subtitulo }}</p>
+            <a href="#contato" class="btn-orcamento">{{ hero.botao_texto }} <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </section>
+{% endif %}
+
+<!-- Serviços -->
+<section id="servicos" class="servicos">
+    <div class="container">
+        <h2 class="section-title">Nossos Serviços</h2>
+        
+        <div class="cards-grid">
+            {% for servico in servicos %}
+            <div class="card">
+                <i class="{{ servico.icone }}"></i>
+                <h3>{{ servico.titulo }}</h3>
+                <p>{{ servico.descricao }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+</section>
+
+<!-- Sobre -->
+<section id="sobre" class="sobre">
+    <div class="container">
+        <div class="sobre-grid">
+            <div class="sobre-texto">
+                {% if sobre %}
+                <h2 class="section-title">{{ sobre.titulo }}</h2>
+                <p>{{ sobre.texto }}</p>
+                {% endif %}
+                <p><strong>Diferenciais:</strong></p>
+                <ul class="lista-diferenciais">
+                    {% for item in sobre.get_diferenciais_list %}
+                        <li>
+                            <i class="{{ sobre.icone_diferencial }}"></i>
+                            {{ item }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="sobre-img">
+                <img src="/media/user.png" alt="Usuário" style="width: 200px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Galeria -->
+<section id="galeria" class="galeria">
+    <div class="container">
+        <h2 class="section-title">Trabalhos Recentes</h2>
+        <div class="galeria-grid">
+            {% for img in galeria %}
+            <div class="galeria-item">
+                {% if img.imagem %}
+                    <img src="{{ img.imagem.url }}" alt="{{ img.titulo }}">
+                {% endif %}
+            </div>
+            {% empty %}
+            <p>Nenhuma imagem cadastrada.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Contato + Formulário -->
+<section id="contato" class="contato">
+    <div class="container">
+        <h2 class="section-title">Fale Comigo</h2>
+        <div class="contato-wrapper">
+            <div class="info-contato">
+                <p><i class="fas fa-phone-alt"></i> +258 84 471 7288</p>
+                <p><i class="fab fa-whatsapp"></i> <a href="https://wa.me/258840000000" target="_blank">Clique para WhatsApp</a></p>
+                <p><i class="fas fa-envelope"></i> cassimosaize@refrigeracao.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> Maputo - Moçambique</p>
+                <div class="redes-sociais">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="form-contato">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ form.name }}
+                    {{ form.phone }}
+                    {{ form.message }}
+                    <button type="submit" class="btn-enviar">Enviar mensagem <i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rodapé -->
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Cassimo Refrigeração & Climatização - Todos os direitos reservados.</p>
+        <p>Técnico credenciado | Soluções em climatização</p>
+    </div>
+</footer>
+
+<!-- Botão WhatsApp flutuante -->
+<a href="https://wa.me/258840000000?text=Olá!%20Preciso%20de%20um%20orçamento%20para%20refrigeração" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+{% endblock %}

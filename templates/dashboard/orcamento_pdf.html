@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Orçamento #{{ orcamento.id }}</title>
+    <style>
+        @page {
+            size: a4;
+            margin: 2cm;
+        }
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            background-color: #f0f0f0;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 14px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 12px;
+        }
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table.info-table td {
+            padding: 6px;
+            vertical-align: top;
+        }
+        .label {
+            font-weight: bold;
+            width: 30%;
+            color: #555;
+        }
+        .descricao {
+            background-color: #f9f9f9;
+            padding: 12px;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #6c757d;
+        }
+        .status-pending { background-color: #ffc107; color: #212529; }
+        .status-viewed { background-color: #17a2b8; }
+        .status-contacted { background-color: #007bff; }
+        .status-budget_sent { background-color: #6c757d; }
+        .status-approved { background-color: #28a745; }
+        .status-rejected { background-color: #dc3545; }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #888;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .valor {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Orçamento #{{ orcamento.id }}</h1>
+        <p>Gerado em {% now "d/m/Y H:i" %}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Dados do Cliente</div>
+        <table class="info-table">
+            <tr><td class="label">Nome:</td><td>{{ orcamento.nome }}</td></tr>
+            <tr><td class="label">E-mail:</td><td>{{ orcamento.email }}</td></tr>
+            <tr><td class="label">Telefone:</td><td>{{ orcamento.telefone }}</td></tr>
+            <tr><td class="label">Endereço:</td><td>{{ orcamento.endereco|default:"Não informado" }}</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Detalhes do Serviço</div>
+        <table class="info-table">
+            <tr><td class="label">Tipo de serviço:</td><td>{{ orcamento.get_tipo_servico_display }}</td></tr>
+            <tr><td class="label">Equipamento:</td><td>{{ orcamento.get_tipo_equipamento_display|default:"Não especificado" }}</td></tr>
+            <tr><td class="label">Quantidade:</td><td>{{ orcamento.quantidade }} unidade(s)</td></tr>
+            <tr><td class="label">Descrição:</td><td><div class="descricao">{{ orcamento.descricao|linebreaksbr }}</div></td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Preferências</div>
+        <table class="info-table">
+            <tr><td class="label">Data preferencial:</td><td>{{ orcamento.data_preferencial|date:"d/m/Y"|default:"Não informada" }}</td></tr>
+            <tr><td class="label">Horário preferencial:</td><td>{{ orcamento.get_horario_preferencial_display|default:"Não informado" }}</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Informações do Orçamento</div>
+        <table class="info-table">
+            <tr><td class="label">Status atual:</td><td>
+                <span class="status-badge status-{{ orcamento.status }}">
+                    {{ orcamento.get_status_display }}
+                </span>
+            </td></tr>
+            <tr><td class="label">Valor orçado:</td><td>
+                {% if orcamento.valor_orcamento %}
+                    <span class="valor">{{ orcamento.valor_orcamento }} MZN</span>
+                {% else %}
+                    <span>Não definido</span>
+                {% endif %}
+            </td></tr>
+            <tr><td class="label">Observações internas:</td><td>{{ orcamento.observacoes|default:"Nenhuma observação" }}</td></tr>
+            <tr><td class="label">Solicitação em:</td><td>{{ orcamento.created_at|date:"d/m/Y H:i" }}</td></tr>
+            <tr><td class="label">Última atualização:</td><td>{{ orcamento.updated_at|date:"d/m/Y H:i" }}</td></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        Este documento foi gerado automaticamente pelo sistema de orçamentos.<br>
+        Em caso de dúvidas, entre em contato através do e-mail suporte@seudominio.com
+    </div>
+</body>
+</html>
