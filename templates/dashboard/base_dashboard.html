@@ -2,12 +2,11 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Dashboard | Cassimo Refrigeração</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -18,12 +17,15 @@
             font-family: 'Inter', sans-serif;
             background: #f1f5f9;
             color: #0f172a;
+            overflow-x: hidden;
         }
         .dashboard-container {
             display: flex;
             min-height: 100vh;
+            position: relative;
         }
-        /* Sidebar */
+
+        /* --- SIDEBAR (Desktop padrão) --- */
         .sidebar {
             width: 280px;
             background: #0a2b4e;
@@ -31,7 +33,13 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            z-index: 1050;
+            top: 0;
+            left: 0;
+            transition: transform 0.3s ease-in-out, width 0.2s;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.08);
         }
+
         .sidebar-header {
             padding: 1.5rem;
             border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -41,6 +49,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            margin: 0;
         }
         .sidebar-nav {
             padding: 1.5rem 0;
@@ -53,6 +62,7 @@
             color: #cbd5e1;
             text-decoration: none;
             transition: 0.3s;
+            font-weight: 500;
         }
         .sidebar-nav a:hover, .sidebar-nav a.active {
             background: rgba(59,130,246,0.2);
@@ -61,28 +71,49 @@
         }
         .sidebar-nav i {
             width: 24px;
+            font-size: 1.2rem;
+            text-align: center;
         }
-        /* Main content */
+        .badge.bg-danger {
+            background-color: #ef4444 !important;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            margin-left: auto;
+        }
+
+        /* Main content desktop */
         .main-content {
             flex: 1;
             margin-left: 280px;
+            width: calc(100% - 280px);
+            transition: margin-left 0.3s ease;
         }
+
+        /* Top bar */
         .top-bar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1020;
         }
         .page-title {
             font-size: 1.5rem;
             font-weight: 600;
+            margin: 0;
         }
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
+            flex-wrap: wrap;
         }
         .logout-btn {
             background: #ef4444;
@@ -91,10 +122,20 @@
             border-radius: 8px;
             text-decoration: none;
             font-size: 0.9rem;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logout-btn:hover {
+            background: #dc2626;
+            color: white;
         }
         .content {
             padding: 2rem;
         }
+
+        /* alerts */
         .alert {
             padding: 12px 20px;
             border-radius: 8px;
@@ -110,26 +151,159 @@
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+
+        /* Botão menu hambúrguer (mobile) - oculto no desktop */
+        .mobile-menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            color: #0f172a;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .mobile-menu-toggle:hover {
+            background: #e2e8f0;
+        }
+
+        /* Overlay para quando sidebar aberta no mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.55);
+            z-index: 1040;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+            backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.3s ease, visibility 0s linear 0s;
+        }
+
+        /* ========== RESPONSIVIDADE MOBILE ========== */
         @media (max-width: 768px) {
             .sidebar {
-                width: 80px;
+                transform: translateX(-100%);
+                width: 280px;
+                box-shadow: none;
             }
-            .sidebar-header h2 span, .sidebar-nav a span {
-                display: none;
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 4px 0 20px rgba(0,0,0,0.2);
             }
             .main-content {
-                margin-left: 80px;
+                margin-left: 0 !important;
+                width: 100%;
             }
-            .sidebar-nav a {
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
                 justify-content: center;
             }
+            .top-bar {
+                padding: 0.8rem 1rem;
+            }
+            .page-title {
+                font-size: 1.25rem;
+            }
+            .user-info span {
+                font-size: 0.9rem;
+            }
+            .logout-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .content {
+                padding: 1.25rem;
+            }
+            /* Ajuste de tabelas e cards para não quebrarem layout */
+            .table-responsive-mobile {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            table, .table {
+                width: 100%;
+                min-width: 600px;
+            }
+            /* Ajuste de grids do bootstrap e cards */
+            .row {
+                margin-left: -0.5rem;
+                margin-right: -0.5rem;
+            }
+            .col, [class*="col-"] {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            /* Cards e formulários */
+            .card {
+                margin-bottom: 1rem;
+            }
+            input, select, textarea {
+                font-size: 16px !important; /* Evita zoom no iOS */
+            }
+            /* Badge ajuste */
+            .badge.bg-danger {
+                margin-left: auto;
+            }
+            /* Sidebar mostra textos normalmente quando aberto */
+            .sidebar.open .sidebar-header h2 span,
+            .sidebar.open .sidebar-nav a span {
+                display: inline-block;
+            }
+        }
+
+        /* Ajustes extra para telas muito pequenas ( < 480px ) */
+        @media (max-width: 480px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .content {
+                padding: 1rem;
+            }
+        }
+
+        /* Estilo para garantir que imagens e iframes sejam responsivos */
+        .content img, .content iframe, .content video {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Scroll suave da sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e3a5f;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="dashboard-container">
-        <aside class="sidebar">
+        <!-- Overlay (fundo escuro ao abrir menu mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="mainSidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-snowflake"></i> <span>Cassimo Admin</span></h2>
             </div>
@@ -142,7 +316,7 @@
                     <i class="fas fa-envelope"></i> <span>Mensagens</span>
                 </a>
 
-                <!-- Novos links para edição de conteúdo -->
+                <!-- Links de edição de conteúdo -->
                 <a href="{% url 'hero_edit' %}" class="{% if request.resolver_match.url_name == 'hero_edit' %}active{% endif %}">
                     <i class="fas fa-home"></i> <span>Hero</span>
                 </a>
@@ -171,9 +345,16 @@
                 </a>
             </nav>
         </aside>
-        <main class="main-content">
+
+        <!-- Main content -->
+        <main class="main-content" id="mainContent">
             <div class="top-bar">
-                <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
                 <div class="user-info">
                     <span><i class="fas fa-user"></i> {{ request.user.username }}</span>
                     <a href="{% url 'dashboard_logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
@@ -191,6 +372,199 @@
             </div>
         </main>
     </div>
+
+    <!-- JavaScript para responsividade mobile (menu hambúrguer + controle overlay) -->
+    <script>
+        (function() {
+            // Elementos
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtn = document.getElementById('mobileMenuToggle');
+            const mainContent = document.getElementById('mainContent');
+
+            // Função para fechar o menu (remover classe open e overlay)
+            function closeMobileMenu() {
+                if (sidebar && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    if (overlay) overlay.classList.remove('active');
+                    // Mudar ícone do botão de volta para bars (caso tenha mudado)
+                    if (toggleBtn) {
+                        const icon = toggleBtn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                    }
+                    // Permitir scroll novamente no body (se tiver sido bloqueado)
+                    document.body.style.overflow = '';
+                }
+            }
+
+            // Função para abrir o menu
+            function openMobileMenu() {
+                if (sidebar) {
+                    sidebar.classList.add('open');
+                    if (overlay) overlay.classList.add('active');
+                    // Mudar ícone para "X"
+                    if (toggleBtn) {
+                        const icon = toggleBtn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('fa-bars');
+                            icon.classList.add('fa-times');
+                        }
+                    }
+                    // Evitar scroll do body quando menu aberto
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            // Toggle do menu (somente em mobile, mas a lógica verifica largura por segurança)
+            function toggleMobileMenu() {
+                if (!sidebar) return;
+                const isOpen = sidebar.classList.contains('open');
+                if (isOpen) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            }
+
+            // Evento de clique no botão hambúrguer
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleMobileMenu();
+                });
+            }
+
+            // Fechar menu ao clicar no overlay
+            if (overlay) {
+                overlay.addEventListener('click', function() {
+                    closeMobileMenu();
+                });
+            }
+
+            // Fechar menu ao pressionar a tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+                    closeMobileMenu();
+                }
+            });
+
+            // Redimensionamento da janela: se a largura for maior que 768px, garantir que o sidebar
+            // fique visível (reset do estado mobile) e remove qualquer transformação travada.
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    const windowWidth = window.innerWidth;
+                    // Se estiver em desktop (>=769px) e sidebar tiver a classe 'open' por acaso, removemos
+                    // para evitar conflito visual e garantimos que o layout padrão seja restaurado.
+                    if (windowWidth >= 769) {
+                        if (sidebar && sidebar.classList.contains('open')) {
+                            sidebar.classList.remove('open');
+                            if (overlay) overlay.classList.remove('active');
+                            document.body.style.overflow = '';
+                            if (toggleBtn) {
+                                const icon = toggleBtn.querySelector('i');
+                                if (icon && icon.classList.contains('fa-times')) {
+                                    icon.classList.remove('fa-times');
+                                    icon.classList.add('fa-bars');
+                                }
+                            }
+                        }
+                        // Garantir que a sidebar tenha propriedades originais (sem transformações indesejadas)
+                        // O CSS já cuida disso via media query, mas forçamos inline para segurança
+                        if (sidebar) sidebar.style.transform = '';
+                    } else {
+                        // Se for mobile e o menu estiver aberto, mas o redimensionamento causou estranheza,
+                        // mantém o estado atual, apenas garante que não haja overflow travado incorretamente
+                        if (sidebar && !sidebar.classList.contains('open')) {
+                            document.body.style.overflow = '';
+                        }
+                    }
+                }, 150);
+            });
+
+            // Prevenir que links dentro da sidebar fechem o menu antes da navegação (boa prática)
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Em mobile, ao clicar em um link, podemos fechar o menu para melhor UX
+                    if (window.innerWidth <= 768) {
+                        closeMobileMenu();
+                    }
+                });
+            });
+
+            // Ao carregar a página, se estiver em mobile, garantir que o sidebar inicie fechado
+            if (window.innerWidth <= 768) {
+                closeMobileMenu();
+            } else {
+                // Se desktop, garantir qualquer estado residual removido
+                if (sidebar) sidebar.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        })();
+    </script>
+
+    <!-- Script adicional para tornar tabelas responsivas (adiciona classe de overflow em tabelas geradas por blocks) -->
+    <script>
+        (function addResponsiveTables() {
+            // Função para aplicar wrapper em todas as tabelas com classe 'table' que não estejam dentro de um wrapper responsivo
+            function makeTablesResponsive() {
+                const tables = document.querySelectorAll('.content table:not(.no-responsive)');
+                tables.forEach(table => {
+                    // Evitar duplicar wrapper
+                    if (!table.closest('.table-responsive-mobile')) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'table-responsive-mobile';
+                        wrapper.style.overflowX = 'auto';
+                        wrapper.style.width = '100%';
+                        table.parentNode.insertBefore(wrapper, table);
+                        wrapper.appendChild(table);
+                    }
+                });
+            }
+            // Executar após um pequeno delay e também quando conteúdo dinâmico for carregado (MutationObserver leve)
+            setTimeout(makeTablesResponsive, 100);
+            const observer = new MutationObserver(() => makeTablesResponsive());
+            observer.observe(document.querySelector('.content'), { childList: true, subtree: true });
+        })();
+    </script>
+
+    <!-- Ajuste extra: Garantir que ícones e elementos flexíveis não quebrem -->
+    <style>
+        /* Correções pontuais para elementos com .badge */
+        .sidebar-nav a {
+            position: relative;
+            flex-wrap: wrap;
+        }
+        .sidebar-nav a .badge {
+            margin-left: auto;
+        }
+        /* Cards e formulários responsivos */
+        .card-body {
+            overflow-x: auto;
+        }
+        form .form-group, form .mb-3 {
+            word-break: break-word;
+        }
+        /* Melhorar toque em dispositivos móveis */
+        @media (max-width: 768px) {
+            .sidebar-nav a {
+                padding: 14px 20px;
+            }
+            button, a, .logout-btn {
+                cursor: pointer;
+                touch-action: manipulation;
+            }
+            .mobile-menu-toggle {
+                touch-action: manipulation;
+            }
+        }
+    </style>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
